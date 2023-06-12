@@ -1,0 +1,92 @@
+package servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import models.AlumnoModel;
+import models.LibroModel;
+
+import java.io.IOException;
+import java.util.List;
+
+import entities.Alumno;
+import entities.Libro;
+
+/**
+ * Servlet implementation class LibroServlet
+ */
+public class LibroServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+  
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		
+	}
+
+    private void listarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+       /* List<Libro> libros = libroModel.listarLibro();
+        request.setAttribute("libros", libros);
+        request.getRequestDispatcher("listarLibros.jsp").forward(request, response);*/
+        
+		try {
+			List<Libro> libros = LibroModel.listarLibros();
+			request.setAttribute("alumnos", alumnos);
+			request.getRequestDispatcher("listaAlumnos.jsp").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+    private void agregarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idLibro = request.getParameter("idLibro");
+        String titulo = request.getParameter("titulo");
+        String autor = request.getParameter("autor");
+        String idEditorial = request.getParameter("idEditorial");
+        int stock = Integer.parseInt(request.getParameter("stock"));
+        String estado = request.getParameter("estado");
+
+        Libro libro = new Libro(idLibro, titulo, autor, idEditorial, stock, estado, "");
+
+        libroModel.agregarLibro(libro);
+
+        response.sendRedirect("libros?action=listar");
+    }
+
+    private void mostrarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idLibro = request.getParameter("idLibro");
+
+        Libro libro = libroModel.mostrarLibro(idLibro);
+
+        request.setAttribute("libro", libro);
+        request.getRequestDispatcher("mostrar_libro.jsp").forward(request, response);
+    }
+
+    private void actualizarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idLibro = request.getParameter("idLibro");
+        String titulo = request.getParameter("titulo");
+        String autor = request.getParameter("autor");
+        String idEditorial = request.getParameter("idEditorial");
+        int stock = Integer.parseInt(request.getParameter("stock"));
+        String estado = request.getParameter("estado");
+
+        Libro libro = new Libro(idLibro, titulo, autor, idEditorial, stock, estado, "");
+
+        libroModel.actualizarLibro(libro);
+
+        response.sendRedirect("libros?action=listar");
+    }
+
+    private void eliminarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idLibro = request.getParameter("idLibro");
+
+        libroModel.eliminarLibro(idLibro);
+
+        response.sendRedirect("libros?action=listar");
+    }
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+}

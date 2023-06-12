@@ -1,0 +1,67 @@
+package models;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.Alumno;
+
+public class AlumnoModel {
+	
+	public static List<Alumno> listarALumnos() throws Exception{
+		
+        List<Alumno> alumnos = new ArrayList<>();
+        Connection miConexion = null;
+        Statement miStatement = null;
+        ResultSet miResultSet = null;
+        try {
+            miConexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/biblioteca_project?serverTimezone=UTC", "root", "admin");
+
+            String sql = "SELECT * FROM alumno";
+            miStatement = miConexion.createStatement();
+            miResultSet = miStatement.executeQuery(sql);
+
+            while (miResultSet.next()) {
+                String id = miResultSet.getString("id");
+                String nombre = miResultSet.getString("nombre");
+                String apellido = miResultSet.getString("apellido");
+                String direccion = miResultSet.getString("direccion");
+                String telefono = miResultSet.getString("telefono");
+                String email = miResultSet.getString("email");
+
+                Alumno temporal = new Alumno(id, nombre, apellido, direccion, telefono, email);
+                alumnos.add(temporal);
+            }
+        } catch (SQLException e) {
+            throw new Exception("Error al listar los alumnos: " + e.getMessage());
+        } finally {
+            if (miResultSet != null) {
+                try {
+                    miResultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (miStatement != null) {
+                try {
+                    miStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (miConexion != null) {
+                try {
+                    miConexion.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return alumnos;
+	}
+
+}

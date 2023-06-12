@@ -1,0 +1,170 @@
+package models;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.Alumno;
+import util.MySQLConexion;
+
+public class AlumnoModel {
+    //private Connection connection = MySQLConexion.getConexion();
+
+    /*public AlumnoModel(Connection connection) {
+        this.connection = connection;
+    }*/
+
+    public List<Alumno> listarAlumnos() {
+        List<Alumno> alumnos = new ArrayList<>();
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+
+        try {
+        	connection = MySQLConexion.getConexion();
+        	
+            /*Statement*/ statement = connection.createStatement();
+            String query = "SELECT * FROM alumno";
+            /*ResultSet */resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                String idAlumno = resultSet.getString("idAlumno");
+                String nombre = resultSet.getString("nombre");
+                String apellido = resultSet.getString("apellido");
+                String direccion = resultSet.getString("direccion");
+                String telefono = resultSet.getString("telefono");
+                String email = resultSet.getString("email");
+
+                Alumno alumno = new Alumno(idAlumno, nombre, apellido, direccion, telefono, email);
+                alumnos.add(alumno);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return alumnos;
+    }
+
+    public void agregarAlumno(Alumno alumno) {
+        try {
+            String query = "INSERT INTO alumno (idAlumno, nombre, apellido, direccion, telefono, email) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, alumno.getIdAlumno());
+            preparedStatement.setString(2, alumno.getNombre());
+            preparedStatement.setString(3, alumno.getApellido());
+            preparedStatement.setString(4, alumno.getDireccion());
+            preparedStatement.setString(5, alumno.getTelefono());
+            preparedStatement.setString(6, alumno.getEmail());
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Alumno mostrarAlumno(String idAlumno) {
+        Alumno alumno = null;
+
+        try {
+            String query = "SELECT * FROM alumno WHERE idAlumno = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, idAlumno);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String nombre = resultSet.getString("nombre");
+                String apellido = resultSet.getString("apellido");
+                String direccion = resultSet.getString("direccion");
+                String telefono = resultSet.getString("telefono");
+                String email = resultSet.getString("email");
+
+                alumno = new Alumno(idAlumno, nombre, apellido, direccion, telefono, email);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return alumno;
+    }
+
+    public void actualizarAlumno(Alumno alumno) {
+        try {
+            String query = "UPDATE alumno SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, email = ? WHERE idAlumno = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, alumno.getNombre());
+            preparedStatement.setString(2, alumno.getApellido());
+            preparedStatement.setString(3, alumno.getDireccion());
+            preparedStatement.setString(4, alumno.getTelefono());
+            preparedStatement.setString(5, alumno.getEmail());
+            preparedStatement.setString(6, alumno.getIdAlumno());
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void eliminarAlumno(String idAlumno) {
+        try {
+            String query = "DELETE FROM alumno WHERE idAlumno = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, idAlumno);
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Alumno> buscarAlumno(String criterio) {
+        List<Alumno> resultados = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM alumno WHERE nombre LIKE ? OR apellido LIKE ? OR idAlumno LIKE ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, "%" + criterio + "%");
+            preparedStatement.setString(2, "%" + criterio + "%");
+            preparedStatement.setString(3, "%" + criterio + "%");
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String idAlumno = resultSet.getString("idAlumno");
+                String nombre = resultSet.getString("nombre");
+                String apellido = resultSet.getString("apellido");
+                String direccion = resultSet.getString("direccion");
+                String telefono = resultSet.getString("telefono");
+                String email = resultSet.getString("email");
+
+                Alumno alumno = new Alumno(idAlumno, nombre, apellido, direccion, telefono, email);
+                resultados.add(alumno);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return resultados;
+    }
+}

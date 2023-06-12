@@ -1,0 +1,82 @@
+<%@page import="entities.Libro"%>
+<%@page import="entities.Editorial"%>
+<%@page import="java.util.List"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Registrar Editorial</title>
+	<%@include file="snippet/bootstrap_ini.jsp" %>
+</head>
+<body>
+
+	<%@ include file="snippet/nav_bar.jsp"%>
+	
+    <div class="container">
+        <br>
+        <h1 class="text-center" style="text-transform: uppercase;"><strong>Registrar Libro</strong></h1><br>
+        <form style="margin: 0 12%" method="get" action="LibroServlet">
+        <input type="hidden" name="action" value="agregar">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id" class="form-label"><b>Codigo:</b></label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+                <div class="col-md-6">
+                    <label for="titulo" class="form-label"><b>Titulo:</b></label>
+                    <input type="text" class="form-control" id="titulo" name="titulo">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="autor" class="form-label"><b>Autor:</b></label>
+                    <input type="text" class="form-control" id="autor" name="autor">
+                </div>
+                <div class="col-md-6">
+                    <label for="editorial" class="form-label"><b>Editorial:</b></label>
+                    <select class="form-select" id="editorial" name="editorial">
+        <%
+        List<Editorial> editoriales = (List<Editorial>) request.getAttribute("editoriales");
+        Libro libro = (Libro) request.getAttribute("libros");
+        if (editoriales != null) {
+            for (Editorial editorial : editoriales) {
+                %>
+                <option value="<%= editorial.getIdEditorial() %>" <%= ((libro != null) && (editorial.getIdEditorial().equals(libro.getIdEditorial()))) ? "selected='selected'" : "" %>>
+                    <%= editorial.getIdEditorial() %> - <%= editorial.getNombre() %>
+                </option>
+                <%
+            }
+        }
+        %>                
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="stock" class="form-label"><b>Stock:</b></label>
+                    <input type="number" class="form-control" id="stock" name="stock">
+                </div>
+                <div class="col-md-6">
+                    <label for="estado" class="form-label"><b>Estado:</b></label>
+                    <select class="form-select" id="estado" name="estado">
+                        <option value="Disponible" selected >Disponible</option>
+                        <option value="Agotado">Prestado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <br><input type="submit" name="Registrar" id="registrar" value="Registrar Libro"
+                        class="btn btn-primary" style="font-weight: 600">
+                    <input type="reset" name="borrar" id="borrar" value="Restablecer"
+                        class="btn btn-secondary" style="font-weight: 600">
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+<%@include file="snippet/bootstrap_fin.jsp" %>
+</html>

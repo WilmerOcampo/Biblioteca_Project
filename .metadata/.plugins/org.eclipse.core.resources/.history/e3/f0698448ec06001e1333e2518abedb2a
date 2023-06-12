@@ -1,0 +1,59 @@
+package servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class EmpleadoServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter("action");
+        if (action == null)
+            action = "listar";
+
+        switch (action) {
+            case "listar":
+                listarEmpleados(request, response);
+                break;
+            /*case "agregar":
+                agregarEmpleado(request, response);
+                break;
+            case "mostrar":
+                try {
+                    mostrarEmpleado(request, response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "actualizar":
+                try {
+                    actualizarEmpleado(request, response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "eliminar":
+                try {
+                    eliminarEmpleado(request, response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;*/
+            default:
+                listarEmpleados(request, response);
+        }
+	}
+	
+	private void listarEmpleados(HttpServletRequest request, HttpServletResponse response) {
+		
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+}

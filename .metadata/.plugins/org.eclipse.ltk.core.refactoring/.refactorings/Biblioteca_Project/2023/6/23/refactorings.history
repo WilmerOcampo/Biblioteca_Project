@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Biblioteca_Project/src/main/webapp/registrarEditorial.jsp&apos; to &apos;registrarLibro.jsp&apos;" description="Rename resource &apos;registrarEditorial.jsp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/webapp/registrarEditorial.jsp" name="registrarLibro.jsp" stamp="1686174892511" updateReferences="true"/>
+</session>
