@@ -1,17 +1,14 @@
 package servlets;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import models.AlumnoModel;
 import models.EmpleadoModel;
 
 import java.io.IOException;
 import java.util.List;
 
-import entities.Alumno;
 import entities.Empleado;
 
 public class EmpleadoServlet extends HttpServlet {
@@ -26,8 +23,12 @@ public class EmpleadoServlet extends HttpServlet {
             case "listar":
                 listarEmpleados(request, response);
                 break;
-            /*case "agregar":
-                agregarEmpleado(request, response);
+            case "agregar":
+			try {
+				agregarEmpleado(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
                 break;
             case "mostrar":
                 try {
@@ -49,7 +50,7 @@ public class EmpleadoServlet extends HttpServlet {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                break;*/
+                break;
             default:
                 listarEmpleados(request, response);
         }
@@ -63,6 +64,50 @@ public class EmpleadoServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void mostrarEmpleado(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String idEmpleado = request.getParameter("id");
+		Empleado empleado = EmpleadoModel.mostrarEmpleado(idEmpleado);
+		
+		request.setAttribute("empleado", empleado);
+		request.getRequestDispatcher("editarEmpleado.jsp").forward(request, response);
+	}
+
+	private void agregarEmpleado(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String idEmpleado = request.getParameter("id");
+		String nombre = request.getParameter("nombre");
+		String apellido = request.getParameter("apellido");
+		String direccion = request.getParameter("direccion");
+		String telefono = request.getParameter("telefono");
+		String email = request.getParameter("email");
+		String dni = request.getParameter("dni");
+		String pass = request.getParameter("clave");
+
+		Empleado empleado = new Empleado(idEmpleado, nombre, apellido, direccion, telefono, email, dni, pass);
+		EmpleadoModel.agregarEmpleado(empleado);
+		listarEmpleados(request, response);
+	}
+
+	private void actualizarEmpleado(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String idAlumno = request.getParameter("id");
+		String nombre = request.getParameter("nombre");
+		String apellido = request.getParameter("apellido");
+		String direccion = request.getParameter("direccion");
+		String telefono = request.getParameter("telefono");
+		String email = request.getParameter("email");
+		String pass = request.getParameter("pass");
+
+		Empleado empleado = new Empleado(idAlumno, nombre, apellido, direccion, telefono, email, pass);
+		EmpleadoModel.actualizarEmpleado(empleado);
+		listarEmpleados(request, response);
+	}
+
+	private void eliminarEmpleado(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String idEmpleado = request.getParameter("id");
+
+		EmpleadoModel.eliminarEmpleado(idEmpleado);
+		listarEmpleados(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

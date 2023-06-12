@@ -26,13 +26,23 @@ public class Empleado {
 	}
 	public Empleado(String idEmpleado, String nombre, String apellido, String direccion, String telefono,
 			String email) {
-		super();
 		this.idEmpleado = idEmpleado;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.direccion = direccion;
 		this.telefono = telefono;
 		this.email = email;
+	}
+	
+	public Empleado(String idEmpleado, String nombre, String apellido, String direccion, String telefono, String email,
+			String pass) {
+		this.idEmpleado = idEmpleado;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.direccion = direccion;
+		this.telefono = telefono;
+		this.email = email;
+		this.pass = pass;
 	}
 	public String getIdEmpleado() {
 		return idEmpleado;

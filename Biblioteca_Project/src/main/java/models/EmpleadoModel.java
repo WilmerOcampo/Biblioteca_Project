@@ -1,6 +1,7 @@
 package models;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -43,147 +44,103 @@ public class EmpleadoModel {
 		return empleados;
     }
 
-    /*public static void addEmpleado(Empleado nuevoEmpleado) throws Exception {
-        try (Connection miConexion = MYSQLConexion.getConnection();
-                PreparedStatement miStatement = miConexion.prepareStatement("INSERT INTO empleado (idEmpleado, nombreEmpleado, apellidoEmpleado, direccion, telefono, email, dni, pass) VALUES (?,?,?,?,?,?,?,?)")) {
+	public static void agregarEmpleado(Empleado empleado) throws Exception {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			connection = MySQLConexion.getConexion();
+			String sql = "INSERT INTO empleado (idEditorial, nombre, apellido, direccion, telefono, email, dni, clave) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			preparedStatement = connection.prepareStatement(sql);
 
-            miStatement.setString(1, nuevoEmpleado.getIdEmpleado());
-            miStatement.setString(2, nuevoEmpleado.getNombreEmpleado());
-            miStatement.setString(3, nuevoEmpleado.getApellidoEmpleado());
-            miStatement.setString(4, nuevoEmpleado.getDireccion());
-            miStatement.setString(5, nuevoEmpleado.getTelefono());
-            miStatement.setString(6, nuevoEmpleado.getEmail());
-            miStatement.setString(7, nuevoEmpleado.getDni());
-            miStatement.setString(8, nuevoEmpleado.getPass());
+			preparedStatement.setString(1, empleado.getIdEmpleado());
+			preparedStatement.setString(2, empleado.getNombre());
+			preparedStatement.setString(3, empleado.getApellido());
+			preparedStatement.setString(4, empleado.getDireccion());
+			preparedStatement.setString(5, empleado.getTelefono());
+			preparedStatement.setString(6, empleado.getEmail());
+			preparedStatement.setString(7, empleado.getDni());
+			preparedStatement.setString(8, empleado.getPass());
 
-            miStatement.execute();
-        }
-    }
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public static Empleado getEmpleado(String idEmpleado) throws Exception {
-        Empleado elEmpleado = null;
-        Connection miConexion = null;
-        PreparedStatement miStatement = null;
-        ResultSet miResulSet = null;
+	public static Empleado mostrarEmpleado(String idEmpleado) throws Exception {
+		Empleado empleado = null;
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 
-        try {
-            miConexion = MYSQLConexion.getConnection();
-            String sql = "SELECT idEmpleado, nombreEmpleado, apellidoEmpleado, direccion, telefono, email, dni, pass FROM empleado WHERE idEmpleado = ?";
-            miStatement = miConexion.prepareStatement(sql);
-            miStatement.setString(1, idEmpleado);
-            miResulSet = miStatement.executeQuery();
+		try {
+			connection = MySQLConexion.getConexion();
+			String query = "SELECT * FROM empleaod WHERE idEmpleado = ?";
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, idEmpleado);
+			resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				String id = resultSet.getString("idEmpleado");
+				String nombre = resultSet.getString("nombre");
+				String apellido = resultSet.getString("apellido");
+				String direccion = resultSet.getString("direccion");
+				String telefono = resultSet.getString("telefono");
+				String email = resultSet.getString("email");
+				String dni = resultSet.getString("dni");
+				String pass = resultSet.getString("clave");
 
-            if (miResulSet.next()) {
-                String id = miResulSet.getString("idEmpleado");
-                String nombre = miResulSet.getString("nombreEmpleado");
-                String apellido = miResulSet.getString("apellidoEmpleado");
-                String direccion = miResulSet.getString("direccion");
-                String telefono = miResulSet.getString("telefono");
-                String email = miResulSet.getString("email");
-                String dni = miResulSet.getString("dni");
-                String pass = miResulSet.getString("pass");
+				empleado = new Empleado(id, nombre, apellido, direccion, telefono, email, dni, pass);
+			}
 
-                elEmpleado = new Empleado(id, nombre, apellido, direccion, telefono, email, dni, pass);
-            } else {
-                throw new Exception("No se encontró el empleado con ID " + idEmpleado);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (miResulSet != null) {
-                try {
-                    miResulSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (miStatement != null) {
-                try {
-                    miStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (miConexion != null) {
-                try {
-                    miConexion.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return elEmpleado;
-    }
+			resultSet.close();
+			preparedStatement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return empleado;
+	}
 
-    public static void actualizarEmpleado(Empleado empleadoActualizado) throws Exception {
-        Connection miConexion = null;
-        PreparedStatement miStatement = null;
+	public static void actualizarEmpleado(Empleado empleado) throws Exception {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			connection = MySQLConexion.getConexion();
+			String query = "UPDATE empleado SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, email = ?, clave = ? WHERE idEmpleado = ?";
+			preparedStatement = connection.prepareStatement(query);
 
-        try {
-            miConexion = MYSQLConexion.getConnection();
+			preparedStatement.setString(1, empleado.getNombre());
+			preparedStatement.setString(2, empleado.getApellido());
+			preparedStatement.setString(3, empleado.getDireccion());
+			preparedStatement.setString(4, empleado.getTelefono());
+			preparedStatement.setString(5, empleado.getEmail());
+			preparedStatement.setString(6, empleado.getPass());
+			preparedStatement.setString(7, empleado.getIdEmpleado());
+			
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-            String sql = "UPDATE empleado SET nombreEmpleado = ?, apellidoEmpleado = ?, direccion = ?, telefono = ?, email = ?, dni = ?, pass = ? WHERE idEmpleado = ?";
-
-            miStatement = miConexion.prepareStatement(sql);
-            miStatement.setString(1, empleadoActualizado.getNombreEmpleado());
-            miStatement.setString(2, empleadoActualizado.getApellidoEmpleado());
-            miStatement.setString(3, empleadoActualizado.getDireccion());
-            miStatement.setString(4, empleadoActualizado.getTelefono());
-            miStatement.setString(5, empleadoActualizado.getEmail());
-            miStatement.setString(6, empleadoActualizado.getDni());
-            miStatement.setString(7, empleadoActualizado.getPass());
-            miStatement.setString(8, empleadoActualizado.getIdEmpleado());
-
-            int filasActualizadas = miStatement.executeUpdate();
-
-            if (filasActualizadas > 0) {
-                System.out.println("Empleado actualizado correctamente.");
-            } else {
-                System.out.println("No se encontró el empleado o no se realizó ninguna actualización.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Manejo de excepciones
-        } finally {
-            // Cerrar recursos en el orden inverso de su apertura
-            if (miStatement != null) {
-                try {
-                    miStatement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (miConexion != null) {
-                try {
-                    miConexion.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public static void eliminarEmpleado(String idEmpleado) throws Exception {
-        Connection miConexion = null;
-        PreparedStatement miStatement = null;
-
-        try {
-            miConexion = MYSQLConexion.getConnection();
-
-            String sql = "DELETE FROM empleado WHERE idEmpleado IS NULL OR idEmpleado=?";
-
-            miStatement = miConexion.prepareStatement(sql);
-            miStatement.setString(1, idEmpleado);
-
-            miStatement.executeUpdate();
-        } finally {
-            // Cerrar los recursos (Statement y Connection) en un bloque finally
-            if (miStatement != null) {
-                miStatement.close();
-            }
-            if (miConexion != null) {
-                miConexion.close();
-            }
-        }
-    }*/
+	public static void eliminarEmpleado(String idEmpleado) throws Exception {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			connection = MySQLConexion.getConexion();
+			String query = "DELETE FROM empleado WHERE idEmpleado IS NULL OR idAlumno = ?";
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, idEmpleado);
+			
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
