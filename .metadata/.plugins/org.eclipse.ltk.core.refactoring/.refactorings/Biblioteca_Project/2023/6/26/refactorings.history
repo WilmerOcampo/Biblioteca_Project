@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Move &apos;logout.jsp&apos; to &apos;snippet&apos;" description="Move &apos;logout.jsp&apos; to &apos;snippet&apos;" destination="src/main/webapp/snippet" element1="src/main/webapp/logout.jsp" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="1" stamp="1688012813579" updateReferences="true"/>&#x0A;&#x0A;</session>

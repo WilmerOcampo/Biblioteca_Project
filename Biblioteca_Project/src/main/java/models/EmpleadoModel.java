@@ -1,28 +1,19 @@
 package models;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import entities.Empleado;
 import util.MySQLConexion;
 
-public class EmpleadoModel {
-	public static List<Empleado> listarEmpleados() throws Exception {
-        List<Empleado> empleados = new ArrayList<>();
-        Connection cn = null;
-        Statement st = null;
-        ResultSet rs = null;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-        try {
-            cn = MySQLConexion.getConexion();
-            String sql = "SELECT idEmpleado, nombre, apellido, direccion, telefono, email FROM empleado";
-            st = cn.createStatement();
-            rs = st.executeQuery(sql);
+public class EmpleadoModel {
+    public static List<Empleado> listarEmpleados() throws SQLException {
+        List<Empleado> empleados = new ArrayList<>();
+
+        try (Connection cn = MySQLConexion.getConexion();
+             Statement st = cn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT idEmpleado, nombre, apellido, direccion, telefono, email FROM empleado")) {
 
             while (rs.next()) {
                 String idEmpleado = rs.getString("idEmpleado");
@@ -35,112 +26,114 @@ public class EmpleadoModel {
                 Empleado empleado = new Empleado(idEmpleado, nombre, apellido, direccion, telefono, email);
                 empleados.add(empleado);
             }
-			rs.close();
-			rs.close();
-			rs.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return empleados;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return empleados;
     }
 
-	public static void agregarEmpleado(Empleado empleado) throws Exception {
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
-		try {
-			connection = MySQLConexion.getConexion();
-			String sql = "INSERT INTO empleado (idEditorial, nombre, apellido, direccion, telefono, email, dni, clave) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			preparedStatement = connection.prepareStatement(sql);
+    public static void agregarEmpleado(Empleado empleado) throws SQLException {
+        try (Connection connection = MySQLConexion.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Empleado (idEmpleado, nombre, apellido, direccion, telefono, email, dni, clave) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
 
-			preparedStatement.setString(1, empleado.getIdEmpleado());
-			preparedStatement.setString(2, empleado.getNombre());
-			preparedStatement.setString(3, empleado.getApellido());
-			preparedStatement.setString(4, empleado.getDireccion());
-			preparedStatement.setString(5, empleado.getTelefono());
-			preparedStatement.setString(6, empleado.getEmail());
-			preparedStatement.setString(7, empleado.getDni());
-			preparedStatement.setString(8, empleado.getPass());
+            preparedStatement.setString(1, empleado.getIdEmpleado());
+            preparedStatement.setString(2, empleado.getNombre());
+            preparedStatement.setString(3, empleado.getApellido());
+            preparedStatement.setString(4, empleado.getDireccion());
+            preparedStatement.setString(5, empleado.getTelefono());
+            preparedStatement.setString(6, empleado.getEmail());
+            preparedStatement.setString(7, empleado.getDni());
+            preparedStatement.setString(8, empleado.getPass());
 
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static Empleado mostrarEmpleado(String idEmpleado) throws Exception {
-		Empleado empleado = null;
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+    public static Empleado mostrarEmpleado(String idEmpleado) throws SQLException {
+        Empleado empleado = null;
 
-		try {
-			connection = MySQLConexion.getConexion();
-			String query = "SELECT * FROM empleaod WHERE idEmpleado = ?";
-			preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setString(1, idEmpleado);
-			resultSet = preparedStatement.executeQuery();
-			if (resultSet.next()) {
-				String id = resultSet.getString("idEmpleado");
-				String nombre = resultSet.getString("nombre");
-				String apellido = resultSet.getString("apellido");
-				String direccion = resultSet.getString("direccion");
-				String telefono = resultSet.getString("telefono");
-				String email = resultSet.getString("email");
-				String dni = resultSet.getString("dni");
-				String pass = resultSet.getString("clave");
+        try (Connection connection = MySQLConexion.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM empleado WHERE idEmpleado = ?"
+             )) {
+            preparedStatement.setString(1, idEmpleado);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-				empleado = new Empleado(id, nombre, apellido, direccion, telefono, email, dni, pass);
-			}
+            if (resultSet.next()) {
+                String id = resultSet.getString("idEmpleado");
+                String nombre = resultSet.getString("nombre");
+                String apellido = resultSet.getString("apellido");
+                String direccion = resultSet.getString("direccion");
+                String telefono = resultSet.getString("telefono");
+                String email = resultSet.getString("email");
+                String dni = resultSet.getString("dni");
+                String pass = resultSet.getString("clave");
 
-			resultSet.close();
-			preparedStatement.close();
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return empleado;
-	}
+                empleado = new Empleado(id, nombre, apellido, direccion, telefono, email, dni, pass);
+            }
 
-	public static void actualizarEmpleado(Empleado empleado) throws Exception {
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
-		try {
-			connection = MySQLConexion.getConexion();
-			String query = "UPDATE empleado SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, email = ?, clave = ? WHERE idEmpleado = ?";
-			preparedStatement = connection.prepareStatement(query);
+            resultSet.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-			preparedStatement.setString(1, empleado.getNombre());
-			preparedStatement.setString(2, empleado.getApellido());
-			preparedStatement.setString(3, empleado.getDireccion());
-			preparedStatement.setString(4, empleado.getTelefono());
-			preparedStatement.setString(5, empleado.getEmail());
-			preparedStatement.setString(6, empleado.getPass());
-			preparedStatement.setString(7, empleado.getIdEmpleado());
-			
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+        return empleado;
+    }
 
-	public static void eliminarEmpleado(String idEmpleado) throws Exception {
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
-		try {
-			connection = MySQLConexion.getConexion();
-			String query = "DELETE FROM empleado WHERE idEmpleado IS NULL OR idAlumno = ?";
-			preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setString(1, idEmpleado);
-			
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+    public static void actualizarEmpleado(Empleado empleado) throws SQLException {
+        try (Connection connection = MySQLConexion.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE empleado SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, email = ?, clave = ? WHERE idEmpleado = ?"
+             )) {
+
+            preparedStatement.setString(1, empleado.getNombre());
+            preparedStatement.setString(2, empleado.getApellido());
+            preparedStatement.setString(3, empleado.getDireccion());
+            preparedStatement.setString(4, empleado.getTelefono());
+            preparedStatement.setString(5, empleado.getEmail());
+            preparedStatement.setString(6, empleado.getPass());
+            preparedStatement.setString(7, empleado.getIdEmpleado());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void eliminarEmpleado(String idEmpleado) throws SQLException {
+        try (Connection connection = MySQLConexion.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM empleado WHERE idEmpleado = ?"
+             )) {
+
+            preparedStatement.setString(1, idEmpleado);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Empleado> obtenerOpcionesEmpleado() throws SQLException {
+        List<Empleado> opciones = new ArrayList<>();
+
+        try (Connection cn = MySQLConexion.getConexion();
+             Statement st = cn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT idEmpleado, nombre FROM Empleado")) {
+
+            while (rs.next()) {
+                Empleado emp = new Empleado();
+                emp.setIdEmpleado(rs.getString("idEmpleado"));
+                emp.setNombre(rs.getString("nombre"));
+                opciones.add(emp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return opciones;
+    }
 }

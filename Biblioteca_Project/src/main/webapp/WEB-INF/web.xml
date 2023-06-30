@@ -39,4 +39,54 @@
     <servlet-name>EmpleadoServlet</servlet-name>
     <url-pattern>/EmpleadoServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>PrestamoServlet</display-name>
+    <servlet-name>PrestamoServlet</servlet-name>
+    <servlet-class>servlets.PrestamoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PrestamoServlet</servlet-name>
+    <url-pattern>/PrestamoServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>CompraLibroServlet</display-name>
+    <servlet-name>CompraLibroServlet</servlet-name>
+    <servlet-class>servlets.CompraLibroServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CompraLibroServlet</servlet-name>
+    <url-pattern>/CompraLibroServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EditorialServlet</display-name>
+    <servlet-name>EditorialServlet</servlet-name>
+    <servlet-class>servlets.EditorialServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EditorialServlet</servlet-name>
+    <url-pattern>/EditorialServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>LoginServlet</display-name>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>servlets.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/LoginServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>LogoutServlet</display-name>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>servlets.LogoutServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/LogoutServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

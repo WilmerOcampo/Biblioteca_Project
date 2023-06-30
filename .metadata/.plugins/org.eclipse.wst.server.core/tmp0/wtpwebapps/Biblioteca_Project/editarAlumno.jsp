@@ -1,3 +1,4 @@
+<%@include file="snippet/logout.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -57,8 +58,9 @@
 			<div class="row">
 				<div class="col-md-12 text-center">
 					<br>
-					<input type="submit" name="enviar" id="enviar" value="Editar Alumno" class="btn btn-primary" style="font-weight: 600" onclick="return confirmarEdicion()">
+					<input type="submit" name="enviar" id="enviar" value="Editar Alumno" class="btn btn-primary" style="font-weight: 600" onclick="return confirmarEdicion(event)">
 					<input type="reset" name="borrar" id="borrar" value="Restablecer" class="btn btn-secondary" style="font-weight: 600">
+					<a href="AlumnoServlet?listaAlumnos&action=listar" class="btn btn-secondary" style="font-weight: 600">Regresar</a>
 				</div>
 			</div>
 		</form>
@@ -66,9 +68,5 @@
 
 </body>
 <%@include file="snippet/bootstrap_fin.jsp" %>
-<script>
-	function confirmarEdicion() {
-		return confirm("¿Estás seguro de que deseas guaradr los cambios?");
-	}
-</script>
+<%@include file="snippet/sa.jsp" %>
 </html>

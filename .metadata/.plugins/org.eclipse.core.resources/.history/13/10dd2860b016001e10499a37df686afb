@@ -1,0 +1,115 @@
+package servlets;
+
+import jakarta.*;
+import models.PrestamoModel;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import entities.Prestamo;
+
+public class PrestamoServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if (action == null)
+            action = "listar";
+
+        switch (action) {
+            case "listar":
+                listarPrestamos(request, response);
+                break;
+            case "agregar":
+			try {
+				agregarPrestamo(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+                break;
+            case "mostrar":
+                mostrarPrestamo(request, response);
+                break;
+            case "actualizar":
+			try {
+				actualizarPrestamo(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+                break;
+            case "eliminar":
+                eliminarPrestamo(request, response);
+                break;
+            default:
+                listarPrestamos(request, response);
+                break;
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+
+    private void listarPrestamos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            List<Prestamo> prestamos = PrestamoModel.listarPrestamos();
+            request.setAttribute("prestamos", prestamos);
+            request.getRequestDispatcher("listaPrestamos.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void agregarPrestamo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String idPrestamo = request.getParameter("id");
+        String idLibro = request.getParameter("idLibro");
+        String fecPres = request.getParameter("fecpre");
+        String fecDevo = request.getParameter("fecdev");
+        String estado = request.getParameter("estado");
+        String idAlumno = request.getParameter("idAlumno");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecPre = dateFormat.parse(fecPres);
+        Date fecDev = dateFormat.parse(fecDevo);
+
+        Prestamo prestamo = new Prestamo(idPrestamo, fecPre, fecDev, estado, idLibro, idAlumno, "");
+        PrestamoModel.agregarPrestamo(prestamo);
+
+        listarPrestamos(request, response);
+    }
+
+    private void mostrarPrestamo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idPrestamo = request.getParameter("id");
+        Prestamo prestamo = PrestamoModel.mostrarPrestamo(idPrestamo);
+
+        request.setAttribute("prestamo", prestamo);
+        request.getRequestDispatcher("editarPrestamo.jsp").forward(request, response);
+    }
+
+    private void actualizarPrestamo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String idPrestamo = request.getParameter("id");
+        String fecPres = request.getParameter("fecpre");
+        String fecDevo = request.getParameter("fecdev");
+        String estado = request.getParameter("estado");
+        String idLibro = request.getParameter("idLibro");
+        String idAlumno = request.getParameter("idAlumno");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecPre = dateFormat.parse(fecPres);
+        Date fecDev = dateFormat.parse(fecDevo);
+
+        Prestamo prestamo = new Prestamo(idPrestamo, fecPre, fecDev, estado, idLibro, idAlumno, "");
+        PrestamoModel.actualizarPrestamo(prestamo);
+        listarPrestamos(request, response);
+    }
+
+    private void eliminarPrestamo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idPrestamo = request.getParameter("id");
+
+        PrestamoModel.eliminarPrestamo(idPrestamo);
+        listarPrestamos(request, response);
+    }
+}

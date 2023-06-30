@@ -1,3 +1,5 @@
+<%@include file="snippet/logout.jsp" %>
+<%@page import="models.EditorialModel"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="util.MySQLConexion"%>
@@ -11,7 +13,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Registrar Editorial</title>
+<title>Editar Libro</title>
 	<%@include file="snippet/bootstrap_ini.jsp" %>
 </head>
 <body>
@@ -20,7 +22,7 @@
 	
     <div class="container">
         <br>
-        <h1 class="text-center" style="text-transform: uppercase;"><strong>Registrar Libro</strong></h1><br>
+        <h1 class="text-center" style="text-transform: uppercase;"><strong>Editar Libro</strong></h1><br>
 		<form method="get" action="LibroServlet" style="margin: 0 12%">
 			<input type="hidden" name="action" value="actualizar">
 			<input type="hidden" name="id" value="${ libro.idLibro }">
@@ -42,20 +44,13 @@
                 </div>
                 <div class="col-md-6">
                     <label for="idEditorial" class="form-label"><b>Editorial:</b></label>
-				    <select class="form-select" id="idEditorial" name="idEditorial">
-				        <option value="${libro.idEditorial }" > ${ libro.editorial }</option>
-				        <% try {
-				            Connection connection = MySQLConexion.getConexion();
-				            String sql = "SELECT * FROM editorial";
-				            Statement statement = connection.createStatement();
-				            ResultSet resultSet = statement.executeQuery(sql);
-				            while (resultSet.next()) { %>
-				                <option value="<%= resultSet.getString("idEditorial") %>"><%= resultSet.getString("nombre") %></option>
-				            <% }
-				        } catch (Exception e) {
-				            e.printStackTrace();
-				        } %>
-				    </select>
+					<select class="form-select" id="idEditorial" name="idEditorial">
+					    <option value="${libro.idEditorial }" > ${ libro.editorial }</option>
+					    <% List<Editorial> opcionesEditorial = EditorialModel.obtenerOpcionesEditorial();
+					    for (Editorial opcion : opcionesEditorial) { %>
+					        <option value="<%= opcion.getIdEditorial() %>"><%= opcion.getNombre() %></option>
+					    <% } %>
+					</select>
                 </div>
             </div>
             <div class="row mb-3">
@@ -67,15 +62,15 @@
                     <label for="estado" class="form-label"><b>Estado:</b></label>
                     <select class="form-select" id="estado" name="estado">
                     <option value="${ libro.estado }" selected > ${ libro.estado }</option>
-                        <option value="Disponible" id="Disponible" name="Disponible" >Disponible</option>
-                        <option value="Agotado" id="Agotado" name="Agotado">Agotado</option>
+                        <option value="Disponible" id="Disponible" >Disponible</option>
+                        <option value="Agotado" id="Agotado" >Agotado</option>
                     </select>
                 </div>
             </div>
 			<div class="row">
 				<div class="col-md-12 text-center">
 					<br>
-					<input type="submit" name="enviar" id="enviar" value="Editar Libro" class="btn btn-primary" style="font-weight: 600" onclick="return confirmarEdicion()">
+					<input type="submit" name="enviar" id="enviar" value="Editar Libro" class="btn btn-primary" style="font-weight: 600" onclick="return confirmarEdicion(event)">
 					<input type="reset" name="borrar" id="borrar" value="Restablecer" class="btn btn-secondary" style="font-weight: 600">
 				</div>
 			</div>
@@ -84,9 +79,5 @@
 
 </body>
 <%@include file="snippet/bootstrap_fin.jsp" %>
-<script>
-	function confirmarEdicion() {
-		return confirm("¿Estás seguro de que deseas guaradr los cambios?");
-	}
-</script>
+<%@include file="snippet/sa.jsp" %>
 </html>

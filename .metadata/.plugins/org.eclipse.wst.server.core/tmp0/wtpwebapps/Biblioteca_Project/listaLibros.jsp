@@ -1,3 +1,4 @@
+<%@include file="snippet/logout.jsp" %>
 <%@page import="java.util.List"%>
 <%@page import="entities.Libro"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -48,7 +49,7 @@
                 <td><%= libro.getEstado() %></td>
                 <td>
                 	<a class="btn btn-outline-success" href="LibroServlet?action=mostrar&id=<%= libro.getIdLibro()%>">Editar</a>
-					<a class="btn btn-outline-danger" onclick="confirmarEliminacion('<%= libro.getIdLibro()%>')" href="#">Eliminar</a>
+					<a class="btn btn-outline-danger" onclick="confirmarEliminacionLi('<%= libro.getIdLibro()%>')" href="#">Eliminar</a>
                 </td>
             </tr>
             <%} %>
@@ -64,6 +65,7 @@
 </body>
 
 <%@include file="snippet/bootstrap_fin.jsp" %>
+<%@include file="snippet/sa.jsp" %>
 <script>
 function confirmarEliminacion(id) {
     if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {

@@ -1,6 +1,130 @@
 package models;
 
-import java.sql.Connection;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.Editorial;
+import util.MySQLConexion;
+
+public class EditorialModel {
+    public static List<Editorial> listarEditoriales() throws Exception {
+        List<Editorial> editoriales = new ArrayList<>();
+        try (Connection cn = MySQLConexion.getConexion();
+             Statement st = cn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT idEditorial, nombre, direccion, telefono, email, ruc FROM Editorial")) {
+
+            while (rs.next()) {
+                String idEditorial = rs.getString("idEditorial");
+                String nombre = rs.getString("nombre");
+                String direccion = rs.getString("direccion");
+                String telefono = rs.getString("telefono");
+                String email = rs.getString("email");
+                String ruc = rs.getString("ruc");
+
+                Editorial editorial = new Editorial(idEditorial, nombre, direccion, telefono, email, ruc);
+                editoriales.add(editorial);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return editoriales;
+    }
+
+    public static void agregarEditorial(Editorial editorial) throws Exception {
+        try (Connection cn = MySQLConexion.getConexion();
+             PreparedStatement ps = cn.prepareStatement(
+                     "INSERT INTO Editorial (idEditorial, nombre, direccion, telefono, email, ruc) VALUES (?, ?, ?, ?, ?, ?)")) {
+
+        	ps.setString(1, editorial.getIdEditorial());
+            ps.setString(2, editorial.getNombre());
+            ps.setString(3, editorial.getDireccion());
+            ps.setString(4, editorial.getTelefono());
+            ps.setString(5, editorial.getEmail());
+            ps.setString(6, editorial.getRuc());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Editorial mostrarEditorial(String idEditorial) throws Exception {
+        Editorial editorial = null;
+        try (Connection cn = MySQLConexion.getConexion();
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM Editorial WHERE idEditorial = ?")) {
+
+            ps.setString(1, idEditorial);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String id = rs.getString("idEditorial");
+                    String nombre = rs.getString("nombre");
+                    String direccion = rs.getString("direccion");
+                    String telefono = rs.getString("telefono");
+                    String email = rs.getString("email");
+                    String ruc = rs.getString("ruc");
+
+                    editorial = new Editorial(id, nombre, direccion, telefono, email, ruc);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return editorial;
+    }
+
+    public static void actualizarEditorial(Editorial editorial) throws Exception {
+        try (Connection cn = MySQLConexion.getConexion();
+             PreparedStatement ps = cn.prepareStatement(
+                     "UPDATE Editorial SET nombre = ?, direccion = ?, telefono = ?, email = ?, ruc = ? WHERE idEditorial = ?")) {
+
+            ps.setString(1, editorial.getNombre());
+            ps.setString(2, editorial.getDireccion());
+            ps.setString(3, editorial.getTelefono());
+            ps.setString(4, editorial.getEmail());
+            ps.setString(5, editorial.getRuc());
+            ps.setString(6, editorial.getIdEditorial());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void eliminarEditorial(String idEditorial) throws Exception {
+        try (Connection cn = MySQLConexion.getConexion();
+             PreparedStatement ps = cn.prepareStatement("DELETE FROM Editorial WHERE idEditorial = ?")) {
+
+            ps.setString(1, idEditorial);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static List<Editorial> obtenerOpcionesEditorial() {
+        List<Editorial> opciones = new ArrayList<>();
+        try (Connection cn = MySQLConexion.getConexion();
+             Statement st = cn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT * FROM editorial")) {
+
+            while (rs.next()) {
+                Editorial ed = new Editorial();
+                ed.setIdEditorial(rs.getString("idEditorial"));
+                ed.setNombre(rs.getString("nombre"));
+                opciones.add(ed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return opciones;
+    }
+}
+
+
+
+
+/*import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,104 +136,160 @@ import entities.Editorial;
 import util.MySQLConexion;
 
 public class EditorialModel {
-    private static Connection connection = MySQLConexion.getConexion();
+    //private static Connection connection = MySQLConexion.getConexion();
 
-    // Constructor
-    /*public EditorialModel(Connection connection) {
-        this.connection = connection;
-    }*/
-
-    // Método para listar todas las editoriales
-    public static List<Editorial> listarEditoriales() throws SQLException {
+    public static List<Editorial> listarEditoriales() throws Exception {
         List<Editorial> editoriales = new ArrayList<>();
-        String query = "SELECT * FROM Editorial";
+        Connection cn = null;
+        Statement st = null;
+        ResultSet rs = null;
 
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
+        try {
+            cn = MySQLConexion.getConexion();
+            String sql = "SELECT idEditorial, nombre, direccion, telefono, email, ruc FROM Editorial";
+            st = cn.createStatement();
+            rs = st.executeQuery(sql);
 
-            while (resultSet.next()) {
-                Editorial editorial = new Editorial(
-                        resultSet.getString("idEditorial"),
-                        resultSet.getString("nombre"),
-                        resultSet.getString("direccion"),
-                        resultSet.getString("telefono"),
-                        resultSet.getString("email"),
-                        resultSet.getString("ruc")
-                );
+            while (rs.next()) {
+                String idEditorial = rs.getString("idEditorial");
+                String nombre = rs.getString("nombre");
+                String direccion = rs.getString("direccion");
+                String telefono = rs.getString("telefono");
+                String email = rs.getString("email");
+                String ruc = rs.getString("ruc");
+
+                Editorial editorial = new Editorial(idEditorial, nombre, direccion, telefono, email, ruc);
                 editoriales.add(editorial);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (st != null) {
+                st.close();
+            }
+            if (cn != null) {
+                cn.close();
+            }
         }
-
         return editoriales;
     }
 
-    // Método para agregar una nueva editorial
-    public void agregarEditorial(Editorial editorial) throws SQLException {
-        String query = "INSERT INTO Editorial (idEditorial, nombre, direccion, telefono, email, ruc) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+    public static void agregarEditorial(Editorial editorial) throws Exception {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = MySQLConexion.getConexion();
+            String query = "INSERT INTO Editorial (idEditorial, nombre, direccion, telefono, email, ruc) VALUES (?, ?, ?, ?, ?, ?)";
+            preparedStatement = connection.prepareStatement(query);
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, editorial.getIdEditorial());
-            statement.setString(2, editorial.getNombre());
-            statement.setString(3, editorial.getDireccion());
-            statement.setString(4, editorial.getTelefono());
-            statement.setString(5, editorial.getEmail());
-            statement.setString(6, editorial.getRuc());
+            preparedStatement.setString(1, editorial.getIdEditorial());
+            preparedStatement.setString(2, editorial.getNombre());
+            preparedStatement.setString(3, editorial.getDireccion());
+            preparedStatement.setString(4, editorial.getTelefono());
+            preparedStatement.setString(5, editorial.getEmail());
+            preparedStatement.setString(6, editorial.getRuc());
 
-            statement.executeUpdate();
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    // Método para mostrar los detalles de una editorial
-    public Editorial mostrarEditorial(String idEditorial) throws SQLException {
-        String query = "SELECT * FROM Editorial WHERE idEditorial = ?";
+    public static Editorial mostrarEditorial(String idEditorial) throws Exception {
         Editorial editorial = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, idEditorial);
+        try {
+            connection = MySQLConexion.getConexion();
+            String query = "SELECT * FROM Editorial WHERE idEditorial = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, idEditorial);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String id = resultSet.getString("idEditorial");
+                String nombre = resultSet.getString("nombre");
+                String direccion = resultSet.getString("direccion");
+                String telefono = resultSet.getString("telefono");
+                String email = resultSet.getString("email");
+                String ruc = resultSet.getString("ruc");
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    editorial = new Editorial(
-                            resultSet.getString("idEditorial"),
-                            resultSet.getString("nombre"),
-                            resultSet.getString("direccion"),
-                            resultSet.getString("telefono"),
-                            resultSet.getString("email"),
-                            resultSet.getString("ruc")
-                    );
-                }
+                editorial = new Editorial(id, nombre, direccion, telefono, email, ruc);
             }
-        }
 
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return editorial;
     }
 
-    // Método para actualizar los datos de una editorial
-    public void actualizarEditorial(Editorial editorial) throws SQLException {
-        String query = "UPDATE Editorial SET nombre = ?, direccion = ?, telefono = ?, email = ?, ruc = ? " +
-                "WHERE idEditorial = ?";
+    public static void actualizarEditorial(Editorial editorial) throws Exception {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = MySQLConexion.getConexion();
+            String query = "UPDATE Editorial SET nombre = ?, direccion = ?, telefono = ?, email = ?, ruc = ? WHERE idEditorial = ?";
+            preparedStatement = connection.prepareStatement(query);
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, editorial.getNombre());
-            statement.setString(2, editorial.getDireccion());
-            statement.setString(3, editorial.getTelefono());
-            statement.setString(4, editorial.getEmail());
-            statement.setString(5, editorial.getRuc());
-            statement.setString(6, editorial.getIdEditorial());
+            preparedStatement.setString(1, editorial.getNombre());
+            preparedStatement.setString(2, editorial.getDireccion());
+            preparedStatement.setString(3, editorial.getTelefono());
+            preparedStatement.setString(4, editorial.getEmail());
+            preparedStatement.setString(5, editorial.getRuc());
+            preparedStatement.setString(6, editorial.getIdEditorial());
 
-            statement.executeUpdate();
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    // Método para eliminar una editorial
-    public void eliminarEditorial(String idEditorial) throws SQLException {
-        String query = "DELETE FROM Editorial WHERE idEditorial = ?";
+    public static void eliminarEditorial(String idEditorial) throws Exception {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = MySQLConexion.getConexion();
+            String query = "DELETE FROM Editorial WHERE idEditorial = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, idEditorial);
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, idEditorial);
-
-            statement.executeUpdate();
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
-}
+    
+    public static List<Editorial> obtenerOpcionesEditorial() {
+        List<Editorial> opciones = new ArrayList<>();
+        try {
+            Connection cn = MySQLConexion.getConexion();
+            String sql = "SELECT * FROM editorial";
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            while (rs.next()) {
+                Editorial editorial = new Editorial();
+                editorial.setIdEditorial(rs.getString("idEditorial"));
+                editorial.setNombre(rs.getString("nombre"));
+                opciones.add(editorial);
+            }
+            cn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return opciones;
+    }
+
+}*/

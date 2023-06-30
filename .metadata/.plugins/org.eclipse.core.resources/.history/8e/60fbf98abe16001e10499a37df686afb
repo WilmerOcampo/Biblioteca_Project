@@ -1,0 +1,192 @@
+package servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.*;
+import models.CompraLibroModel;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import entities.CompraLibro;
+
+public class CompraLibroServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String action = request.getParameter("action");
+		action = (action == null) ? "listar" : action;
+
+		switch (action) {
+			case "listar":
+				listarCompras(request, response);
+				break;
+			case "agregar":
+				agregarCompra(request, response);
+				break;
+			case "mostrar":
+				mostrarCompra(request, response);
+				break;
+			case "actualizar":
+				actualizarCompra(request, response);
+				break;
+			case "eliminar":
+				eliminarCompra(request, response);
+				break;
+			default:
+				listarCompras(request, response);
+				break;
+		}
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+	private void listarCompras(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			List<CompraLibro> compras = CompraLibroModel.obtenerDetallesCompra();
+			request.setAttribute("compras", compras);
+			request.getRequestDispatcher("listaCompras.jsp").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void agregarCompra(HttpServletRequest request, HttpServletResponse response) {
+		String id = request.getParameter("idCompra");
+		String idLibro = request.getParameter("libro");
+		String idEditorial = request.getParameter("editorial");
+		String idEmpleado = request.getParameter("empleado");
+		String fecCom = request.getParameter("fecha");
+		BigDecimal precio = new BigDecimal(request.getParameter("precio"));
+		int cantidad = Integer.parseInt(request.getParameter("cantidad"));
+
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date fecCompra = dateFormat.parse(fecCom);
+			CompraLibro compra = new CompraLibro(id, idLibro, idEditorial, idEmpleado, fecCompra, precio, cantidad);
+			CompraLibroModel.agregarCompraLibro(compra);
+			listarCompras(request, response);
+		} catch (Exception e) {
+		}
+	}
+
+	private void mostrarCompra(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String id = request.getParameter("id");
+		CompraLibro compra = CompraLibroModel.mostrarCompraLibro(id);
+
+		request.setAttribute("compra", compra);
+		request.getRequestDispatcher("editarCompras.jsp").forward(request, response);
+	}
+
+	private void actualizarCompra(HttpServletRequest request, HttpServletResponse response) {
+		String idCompra = request.getParameter("id");
+		String idLibro = request.getParameter("libro");
+		String idEditorial = request.getParameter("editorial");
+		String idEmpleado = request.getParameter("empleado");
+		String fecCom = request.getParameter("fecha");
+		BigDecimal precio = new BigDecimal(request.getParameter("precio"));
+		int cantidad = Integer.parseInt(request.getParameter("cantidad"));
+
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date fecCompra = dateFormat.parse(fecCom);
+			CompraLibro compra = new CompraLibro(idCompra, idLibro, idEditorial, idEmpleado, fecCompra, precio,
+					cantidad);
+			CompraLibroModel.actualizarCompraLibro(compra);
+			listarCompras(request, response);
+		} catch (Exception e) {
+		}
+	}
+
+	private void eliminarCompra(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String idCompra = request.getParameter("id");
+
+		CompraLibroModel.eliminarCompraLibro(idCompra);
+		listarCompras(request, response);
+	}
+}
+
+/*
+package servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.*;
+import models.CompraLibroModel;
+import entities.CompraLibro;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+public class CompraLibroServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        action = (action == null) ? "listar" : action;
+
+        switch (action) {
+            case "listar" -> listarCompras(request, response);
+            case "agregar" -> procesarCompra(request, response, "agregar");
+            case "mostrar" -> procesarCompra(request, response, "mostrar");
+            case "actualizar" -> procesarCompra(request, response, "actualizar");
+            case "eliminar" -> procesarCompra(request, response, "eliminar");
+            default -> listarCompras(request, response);
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+
+    private void listarCompras(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            List<CompraLibro> compras = CompraLibroModel.obtenerDetallesCompra();
+            request.setAttribute("compras", compras);
+            request.getRequestDispatcher("listaCompras.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void procesarCompra(HttpServletRequest request, HttpServletResponse response, String action) throws ServletException, IOException {
+        String idCompra = request.getParameter("id");
+        String idLibro = request.getParameter("libro");
+        String idEditorial = request.getParameter("editorial");
+        String idEmpleado = request.getParameter("empleado");
+        String fecCom = request.getParameter("fecha");
+        BigDecimal precio = new BigDecimal(request.getParameter("precio"));
+        int cantidad = Integer.parseInt(request.getParameter("cantidad"));
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date fecCompra = dateFormat.parse(fecCom);
+            CompraLibro compra = new CompraLibro(idCompra, idLibro, idEditorial, idEmpleado, fecCompra, precio, cantidad);
+
+            switch (action) {
+                case "agregar" -> CompraLibroModel.agregarCompraLibro(compra);
+                case "mostrar" -> {
+                    CompraLibro compraMostrada = CompraLibroModel.mostrarCompraLibro(idCompra);
+                    request.setAttribute("compra", compraMostrada);
+                    request.getRequestDispatcher("editarCompras.jsp").forward(request, response);
+                    return; // Se agrega un return para salir del método después de redirigir
+                }
+                case "actualizar" -> CompraLibroModel.actualizarCompraLibro(compra);
+                case "eliminar" -> CompraLibroModel.eliminarCompraLibro(idCompra);
+            }
+            listarCompras(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}*/

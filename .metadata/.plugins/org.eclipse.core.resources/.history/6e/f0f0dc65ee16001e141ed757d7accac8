@@ -1,0 +1,256 @@
+package models;
+import entities.CompraLibro;
+import util.MySQLConexion;
+
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+
+
+public class CompraLibroModel {
+
+    public static List<CompraLibro> obtenerDetallesCompra() {
+        List<CompraLibro> compras = new ArrayList<>();
+
+        try (Connection connection = MySQLConexion.getConexion();
+             CallableStatement statement = connection.prepareCall("{CALL SP_ObtenerDetallesCompra()}")) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    CompraLibro compra = obtenerCompraLibroFromResultSet(resultSet);
+                    compras.add(compra);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return compras;
+    }
+
+    public static void agregarCompraLibro(CompraLibro com) throws Exception {
+        try (Connection cn = MySQLConexion.getConexion();
+             PreparedStatement ps = cn.prepareStatement("CALL SP_AgregarCompra(?, ?, ?, ?, ?, ?, ?)")) {
+
+            ps.setString(1, com.getIdCompra());
+            ps.setString(2, com.getIdLibro());
+            ps.setString(3, com.getIdEditorial());
+            ps.setString(4, com.getIdEmpleado());
+            ps.setDate(5, new java.sql.Date(com.getFecCompra().getTime()));
+            ps.setBigDecimal(6, com.getPrecio());
+            ps.setInt(7, com.getCantidad());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static CompraLibro mostrarCompraLibro(String id) {
+        CompraLibro compra = null;
+        try (Connection cn = MySQLConexion.getConexion();
+             PreparedStatement ps = cn.prepareStatement("CALL SP_MostrarCompra(?)")) {
+
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    compra = obtenerCompraLibroFromResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return compra;
+    }
+
+    public static void actualizarCompraLibro(CompraLibro compra) throws Exception {
+        try (Connection connection = MySQLConexion.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE CompraLibro SET idLibro = ?, idEditorial = ?, idEmpleado = ?, fecCompra = ?, precio = ?, cantidad = ? WHERE idCompra = ?")) {
+
+            setCompraLibroValues(preparedStatement, compra);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void eliminarCompraLibro(String idCompra) {
+        try (Connection connection = MySQLConexion.getConexion();
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM CompraLibro WHERE idCompra IS NULL OR idCompra = ?")) {
+
+            preparedStatement.setString(1, idCompra);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static CompraLibro obtenerCompraLibroFromResultSet(ResultSet rs) throws SQLException {
+        String idCompra = rs.getString("idCompra");
+        String titulo = rs.getString("titulo");
+        String editorial = rs.getString("editorial");
+        String empleado = rs.getString("empleado");
+        Date fecCompra = rs.getDate("fecCompra");
+        BigDecimal precio = rs.getBigDecimal("precio");
+        int cantidad = rs.getInt("cantidad");
+
+        return new CompraLibro(idCompra, fecCompra, precio, cantidad, titulo, editorial, empleado);
+    }
+
+    private static void setCompraLibroValues(PreparedStatement ps, CompraLibro c) throws SQLException {
+        ps.setString(1, c.getIdLibro());
+        ps.setString(2, c.getIdEditorial());
+        ps.setString(3, c.getIdEmpleado());
+        ps.setDate(4, new java.sql.Date(c.getFecCompra().getTime()));
+        ps.setBigDecimal(5, c.getPrecio());
+        ps.setInt(6, c.getCantidad());
+        ps.setString(7, c.getIdCompra());
+    }
+}
+
+
+
+
+
+
+
+/*package models;
+
+import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import entities.CompraLibro;
+import util.MySQLConexion;
+
+public class CompraLibroModel {
+
+	public static List<CompraLibro> obtenerDetallesCompra() {
+	    List<CompraLibro> compras = new ArrayList<>();
+
+	    try (Connection connection = MySQLConexion.getConexion()) {
+	        String sql = "{CALL SP_ObtenerDetallesCompra()}";
+	        try (CallableStatement statement = connection.prepareCall(sql)) {
+	            try (ResultSet resultSet = statement.executeQuery()) {
+	                while (resultSet.next()) {
+	                    String idCompra = resultSet.getString("idCompra");
+	                    String titulo = resultSet.getString("titulo");
+	                    String editorial = resultSet.getString("editorial");
+	                    String empleado = resultSet.getString("empleado");
+	                    Date fecCompra = resultSet.getDate("fecCompra");
+	                    BigDecimal precio = resultSet.getBigDecimal("precio");
+	                    int cantidad = resultSet.getInt("cantidad");
+
+	                    CompraLibro compra = new CompraLibro(idCompra, fecCompra, precio, cantidad, titulo, editorial, empleado);
+	                    compras.add(compra);
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return compras;
+	}
+
+	
+	public static void agregarCompraLibro(CompraLibro com) throws Exception {
+		Connection cn = null;
+		PreparedStatement ps = null;
+		try {
+			cn = MySQLConexion.getConexion();
+			String query = "CALL SP_AgregarCompra(?, ?, ?, ?, ?, ?, ?)";
+			ps = cn.prepareStatement(query);
+
+			ps.setString(1, com.getIdCompra());
+			ps.setString(2, com.getIdLibro());
+			ps.setString(3, com.getIdEditorial());
+			ps.setString(4, com.getIdEmpleado());
+			ps.setDate(5, new java.sql.Date(com.getFecCompra().getTime()));
+			ps.setBigDecimal(6, com.getPrecio());
+			ps.setInt(7, com.getCantidad());
+
+			ps.executeUpdate();
+			ps.close();
+			cn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static CompraLibro mostrarCompraLibro(String id) {
+	    CompraLibro compra = null;
+	    try (Connection cn = MySQLConexion.getConexion()) {
+	        String sql = "CALL SP_MostrarCompra(?)";
+
+	        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+	            ps.setString(1, id);
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                	String idCompra = rs.getString("idCompra");
+						String titulo = rs.getString("titulo");
+						String editorial = rs.getString("editorial");
+						String empleado = rs.getString("empleado");
+						Date fecCompra = rs.getDate("fecCompra");
+						BigDecimal precio = rs.getBigDecimal("precio");
+						int cantidad = rs.getInt("cantidad");
+
+						compra = new CompraLibro(idCompra, fecCompra, precio, cantidad, titulo, editorial, empleado);
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return compra;
+	}
+
+
+	public static void actualizarCompraLibro(CompraLibro compra) throws Exception {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			connection = MySQLConexion.getConexion();
+			String query = "UPDATE CompraLibro SET idLibro = ?, idEditorial = ?, idEmpleado = ?, fecCompra = ?, precio = ?, cantidad = ? WHERE idCompra = ?";
+			preparedStatement = connection.prepareStatement(query);
+
+			preparedStatement.setString(1, compra.getIdLibro());
+			preparedStatement.setString(2, compra.getIdEditorial());
+			preparedStatement.setString(3, compra.getIdEmpleado());
+			preparedStatement.setDate(4, new java.sql.Date(compra.getFecCompra().getTime()));
+			preparedStatement.setBigDecimal(5, compra.getPrecio());
+			preparedStatement.setInt(6, compra.getCantidad());
+			preparedStatement.setString(7, compra.getIdCompra());
+
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			connection.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void eliminarCompraLibro(String idCompra) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			connection = MySQLConexion.getConexion();
+			String query = "DELETE FROM CompraLibro WHERE idCompra IS NULL OR idCompra = ?";
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, idCompra);
+
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}*/

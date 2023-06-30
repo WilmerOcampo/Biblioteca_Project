@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,4 +131,23 @@ public class LibroModel {
 			e.printStackTrace();
 		}
 	}
+	
+    public static List<Libro> obtenerOpcionesLibro() {
+        List<Libro> opciones = new ArrayList<>();
+		try (Connection cn = MySQLConexion.getConexion()) {
+			String sql = "SELECT * FROM Libro";
+			Statement st = cn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			while (rs.next()) {
+				Libro lib = new Libro();
+				lib.setIdLibro(rs.getString("idLibro"));
+				lib.setTitulo(rs.getString("titulo"));
+				opciones.add(lib);
+			}
+			cn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        return opciones;
+    }
 }

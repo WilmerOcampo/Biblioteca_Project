@@ -1,0 +1,102 @@
+<%@include file="snippet/logout.jsp" %>
+<%@page import="java.util.List"%>
+<%@page import="entities.CompraLibro"%>
+<%@page import="java.sql.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Compras</title>
+	<%@include file="snippet/bootstrap_ini.jsp" %>
+</head>
+<body>
+	<!--%
+        HttpSession sesion=request.getSession();
+        if( sesion.getAttribute("logueado")==null ||  sesion.getAttribute("logueado").equals("0") ){
+            response.sendRedirect("login.jsp");
+        }
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+    %-->
+	<%@include file="snippet/nav_bar.jsp"%>
+
+	<div class="d-flex align-items-center justify-content-center">
+		<h1 style="text-transform: uppercase"><strong>Compras</strong></h1>
+
+		<nav class="navbar">
+			<div class="container-fluid">
+				<form class="d-flex" role="search" style="margin-left: 9rem">
+					<input class="form-control me-4" type="search" placeholder="Ingrese su búsqueda" aria-label="Search" id="busqueda" oninput="filtrarTabla()">
+					<button class="btn btn-warning" type="button" style="color: #fff; font-weight: 600">Buscar</button>
+				</form>
+			</div>
+		</nav>
+	</div>
+	<br>
+	<div class="container">
+		<table class="table table-striped" id="tabla">
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Libro</th>
+				<th scope="col">Editorial</th>
+				<th scope="col">Empleado</th>
+				<th scope="col">Fecha</th>
+				<th scope="col">Precio</th>
+				<th scope="col">Cantidad</th>
+				<th scope="col">Acciones</th>
+			</tr>
+			<% for (CompraLibro compra : (List<CompraLibro>) request.getAttribute("compras")) { %>
+			<tr class="fila">
+				<th><%= compra.getIdCompra() %></th>
+				<td><%= compra.getLibro() %></td>
+				<td><%= compra.getEditorial() %></td>
+				<td><%= compra.getEmpleado() %></td>
+				<td><%= compra.getFecCompra() %></td>
+				<td><%= compra.getPrecio() %></td>
+				<td><%= compra.getCantidad() %></td>
+				<td>
+					<a class="btn btn-outline-success" href="CompraLibroServlet?action=mostrar&id=<%= compra.getIdCompra()%>">Editar</a>
+					<a class="btn btn-outline-danger" onclick="confirmarEliminacionCo('<%= compra.getIdCompra()%>')" href="#">Eliminar</a>
+				</td>
+			</tr>
+			<%} %>
+		</table>
+
+		<div class="d-flex justify-content-center">
+			<input class="btn btn-primary" type="button" value="Agregar Compra" 
+				style="color: #fff; font-weight:600"
+				onclick="window.location.href='registrarCompra.jsp'">
+		</div>
+	</div>
+</body>
+<%@include file="snippet/bootstrap_fin.jsp" %>
+<%@include file="snippet/sa.jsp" %>
+<script>
+function filtrarTabla() {
+    var input, filter, table, th, tr, thId, thLibro, tdEditorial, tdEmpleado, tdFecha, i;
+    input = document.getElementById("busqueda");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("tabla");
+    tr = table.getElementsByClassName("fila");
+    for (i = 0; i < tr.length; i++) {
+        tdId = tr[i].getElementsByTagName("th")[0];
+        tdLibro = tr[i].getElementsByTagName("th")[1];
+        tdEditorial = tr[i].getElementsByTagName("td")[2];
+        tdEmpleado = tr[i].getElementsByTagName("td")[3];
+        tdFecha = tr[i].getElementsByTagName("td")[4];
+        if (tdId || tdEditorial || tdEmpleado || tdFecha) {
+            if (tdId.innerHTML.toUpperCase().indexOf(filter) > -1 ||
+            	tdEditorial.innerHTML.toUpperCase().indexOf(filter) > -1 ||
+            	tdEmpleado.innerHTML.toUpperCase().indexOf(filter) > -1 ||
+            	tdFecha.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+</html>

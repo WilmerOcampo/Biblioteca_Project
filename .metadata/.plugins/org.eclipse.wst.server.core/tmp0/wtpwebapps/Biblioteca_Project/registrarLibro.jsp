@@ -1,3 +1,6 @@
+<%@page import="models.EditorialModel"%>
+<%@include file="snippet/logout.jsp" %>
+<%@page import="models.LibroModel"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="util.MySQLConexion"%>
@@ -41,18 +44,10 @@
                 <div class="col-md-6">
                     <label for="idEditorial" class="form-label"><b>Editorial:</b></label>
 				    <select class="form-select" id="idEditorial" name="idEditorial">
-				        <!-- option value="0" disabled>Seleccione editorial</option-->
-				        <% try {
-				            Connection connection = MySQLConexion.getConexion();
-				            String sql = "SELECT * FROM editorial";
-				            Statement statement = connection.createStatement();
-				            ResultSet resultSet = statement.executeQuery(sql);
-				            while (resultSet.next()) { %>
-				                <option value="<%= resultSet.getString("idEditorial") %>"><%= resultSet.getString("nombre") %></option>
-				            <% }
-				        } catch (Exception e) {
-				            e.printStackTrace();
-				        } %>
+					    <% List<Editorial> opcionesEditorial = EditorialModel.obtenerOpcionesEditorial();
+					    for (Editorial opcion : opcionesEditorial) { %>
+					        <option value="<%= opcion.getIdEditorial() %>"><%= opcion.getNombre() %></option>
+					    <% } %>
 				    </select>
                 </div>
             </div>
@@ -65,8 +60,8 @@
                     <label for="estado" class="form-label"><b>Estado:</b></label>
                     <select class="form-select" id="estado" name="estado">
                     <!--option value="selecione" disabled="disabled" >Seleccione</option-->
-                        <option value="Disponible" id="Disponible" name="Disponible" selected >Disponible</option>
-                        <option value="Agotado" id="Agotado" name="Agotado">Agotado</option>
+                        <option value="Disponible" id="Disponible"  selected >Disponible</option>
+                        <option value="Agotado" id="Agotado" >Agotado</option>
                     </select>
                 </div>
             </div>

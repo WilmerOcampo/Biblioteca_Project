@@ -1,0 +1,17 @@
+	<%
+		if(session.getAttribute("nombre")==null){
+			response.sendRedirect("login.jsp");
+		} else {
+	%>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link rel="stylesheet" href="alert/dist/sweetalert.css">
+	
+	<script type="text/javascript">
+        swal("¡Bienvenido!", "<%= session.getAttribute("nombre") %>, gracias por iniciar sesión", "success");
+    </script>
+	
+
+<%
+    }
+%>
+	

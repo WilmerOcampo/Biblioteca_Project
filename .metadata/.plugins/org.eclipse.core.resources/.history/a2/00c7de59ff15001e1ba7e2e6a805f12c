@@ -1,0 +1,182 @@
+package servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import models.PrestamoModel;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import entities.Prestamo;
+
+public class PrestamoServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String action = request.getParameter("action");
+
+		if (action == null)
+			action = "listar";
+
+		switch (action) {
+		case "listar":
+			listarPrestamos(request, response);
+			break;
+		case "agregar":
+			try {
+				agregarPrestamo(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case "mostrar":
+			try {
+				mostrarPrestamo(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case "actualizar":
+			try {
+				actualizarPrestamo(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case "eliminar":
+			try {
+				eliminarPrestamo(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		default:
+			listarPrestamos(request, response);
+			break;
+		}
+	}
+
+    private void listarPrestamos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		try {
+			List<Prestamo> prestamos = PrestamoModel.listarPrestamos();
+			request.setAttribute("prestamos", prestamos);
+			request.getRequestDispatcher("listaPrestamos.jsp").forward(request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+    private void agregarPrestamo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String idPrestamo = request.getParameter("id");
+        String idLibro = request.getParameter("idLibro");
+        String fecPres = request.getParameter("fecpre");
+        String fecDevo = request.getParameter("fecdev");
+        String estado = request.getParameter("estado");
+        String idAlumno = request.getParameter("idAlumno");
+        System.out.println("LLEGUE AQUÍ");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecPre = dateFormat.parse(fecPres);
+        Date fecDev = dateFormat.parse(fecDevo);
+
+        Prestamo prestamo = new Prestamo(idPrestamo, fecPre, fecDev, estado, idLibro, idAlumno);
+        PrestamoModel.agregarPrestamo(prestamo);
+
+        listarPrestamos(request, response);
+    }
+
+    private void mostrarPrestamo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	String idPrestamo = request.getParameter("id");
+        Prestamo prestamo = PrestamoModel.mostrarPrestamo(idPrestamo);
+
+        request.setAttribute("prestamo", prestamo);
+        request.getRequestDispatcher("editarPrestamo.jsp").forward(request, response);
+    }
+
+    private void actualizarPrestamo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String idPrestamo = request.getParameter("id");
+        
+        String fecPres = request.getParameter("fecpre");
+        String fecDevo = request.getParameter("fecdev");
+        String estado = request.getParameter("estado");
+        String idLibro = request.getParameter("idLibro");
+        String idAlumno = request.getParameter("idAlumno");
+        System.out.println("LLEGUE AQUÍ");
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        Date fecPre = dateFormat.parse(fecPres);
+        Date fecDev = dateFormat.parse(fecDevo);
+
+        Prestamo prestamo = new Prestamo(idPrestamo, fecPre, fecDev, estado, idLibro, idAlumno);
+        PrestamoModel.actualizarPrestamo(prestamo);
+        listarPrestamos(request, response);
+    }
+    /*private void actualizarPrestamo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String idPrestamo = request.getParameter("id");
+        
+        String fecPres = request.getParameter("fecpre");
+        String fecDevo = request.getParameter("fecdev");
+        String estado = request.getParameter("estado");
+        String idLibro = request.getParameter("idLibro");
+        String idAlumno = request.getParameter("idAlumno");
+        System.out.println("LLEGUE AQUÍ");
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date fecPre = null;
+        if (fecPres != null && !fecPres.isEmpty()) {
+            try {
+                fecPre = dateFormat.parse(fecPres);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                // Mostrar mensaje de error al usuario
+                request.setAttribute("errorMessage", "La fecha proporcionada es inválida.");
+                // Redireccionar al usuario a una página de error o a la página anterior
+                request.getRequestDispatcher("error.jsp").forward(request, response);
+            }
+
+        } else {
+            // Mostrar mensaje de error al usuario
+            request.setAttribute("errorMessage", "La fecha es obligatoria y debe proporcionarse un valor válido.");
+            // Redireccionar al usuario a una página de error o a la página anterior
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+        }
+        
+        Date fecDev = null;
+        if (fecDevo != null && !fecDevo.isEmpty()) {
+            try {
+                fecDev = dateFormat.parse(fecDevo);
+            } catch (ParseException e) {
+                // Manejo de la excepción de fecha inválida
+                e.printStackTrace();
+                // Puedes mostrar un mensaje de error al usuario o realizar otra acción apropiada
+            }
+        } else {
+            // Manejo de caso de fecha vacía
+            // Puedes mostrar un mensaje de error al usuario o realizar otra acción apropiada
+        }
+
+        Prestamo prestamo = new Prestamo(idPrestamo, idLibro, fecPre, fecDev, estado, idAlumno, "", "");
+        PrestamoModel.actualizarPrestamo(prestamo);
+        listarPrestamos(request, response);
+    }*/
+
+
+
+    private void eliminarPrestamo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String idPrestamo = request.getParameter("id");
+
+        PrestamoModel.eliminarPrestamo(idPrestamo);
+        listarPrestamos(request, response);
+    }
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+}

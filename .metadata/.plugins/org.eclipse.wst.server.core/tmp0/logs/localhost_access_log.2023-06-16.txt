@@ -1,0 +1,11 @@
+127.0.0.1 - - [16/Jun/2023:10:24:22 -0500] "GET / HTTP/1.1" 404 687
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:25 -0500] "GET /Biblioteca_Project/PrestamoServlet HTTP/1.1" 200 7595
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:29 -0500] "GET /Biblioteca_Project/PrestamoServlet?action=mostrar&id=PRE01 HTTP/1.1" 200 6670
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:32 -0500] "GET /Biblioteca_Project/PrestamoServlet?action=mostrar&id=PRE01 HTTP/1.1" 200 6670
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:42 -0500] "GET /Biblioteca_Project/LibroServlet?listaLibros&action=listar HTTP/1.1" 200 9238
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:43 -0500] "GET /Biblioteca_Project/LibroServlet?action=mostrar&id=LIB01 HTTP/1.1" 200 6753
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:47 -0500] "GET /Biblioteca_Project/LibroServlet?action=mostrar&id=LIB01 HTTP/1.1" 200 6753
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:51 -0500] "GET /Biblioteca_Project/LibroServlet?action=mostrar&id=LIB01 HTTP/1.1" 200 6753
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:24:58 -0500] "GET /Biblioteca_Project/AlumnoServlet?listaAlumnos&action=listar HTTP/1.1" 200 8839
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:25:00 -0500] "GET /Biblioteca_Project/AlumnoServlet?action=mostrar&id=ALU01 HTTP/1.1" 200 5947
+0:0:0:0:0:0:0:1 - - [16/Jun/2023:10:25:01 -0500] "GET /Biblioteca_Project/AlumnoServlet?action=mostrar&id=ALU01 HTTP/1.1" 200 5947

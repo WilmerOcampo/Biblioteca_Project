@@ -18,6 +18,10 @@ public class Editorial {
 		this.ruc = ruc;
 	}
 
+	public Editorial() {
+		// TODO Auto-generated constructor stub
+	}
+
 	// Getters and Setters
 	public String getIdEditorial() {
 		return idEditorial;

@@ -1,3 +1,4 @@
+<%@include file="snippet/logout.jsp" %>
 <%@page import="java.util.List"%>
 <%@page import="entities.Alumno"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -41,7 +42,7 @@
 				<td><%= alumno.getEmail()%></td>
 				<td>
 					<a class="btn btn-outline-success" href="AlumnoServlet?action=mostrar&id=<%= alumno.getIdAlumno()%>">Editar</a>
-					<a class="btn btn-outline-danger" onclick="confirmarEliminacion('<%= alumno.getIdAlumno()%>')" href="#">Eliminar</a>
+					<a class="btn btn-outline-danger" onclick="confirmarEliminacionAl('<%= alumno.getIdAlumno()%>')" href="#">Eliminar</a>
 				</td>
 			</tr>
 			<% } %>
@@ -55,15 +56,14 @@
 		
 	</div>
 
-</body>
-
 <%@include file="snippet/bootstrap_fin.jsp" %>
+<%@include file="snippet/sa.jsp" %>
 <script>
-function confirmarEliminacion(id) {
+/*function confirmarEliminacion(id) {
     if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
         window.location.href = "AlumnoServlet?action=eliminar&id=" + id;
     }
-}
+}*/
 
 function filtrarTabla() {
     var input, filter, table, th, tr, thId, tdNombre, tdApellido, i;

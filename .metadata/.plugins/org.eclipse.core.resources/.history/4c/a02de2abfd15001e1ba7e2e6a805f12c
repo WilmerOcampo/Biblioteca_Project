@@ -1,0 +1,130 @@
+package models;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import entities.Prestamo;
+import util.MySQLConexion;
+
+public class PrestamoModel {
+	
+	public static List<Prestamo> listarPrestamos() {
+		List<Prestamo> prestamos = new ArrayList<>();
+
+		try (Connection connection = MySQLConexion.getConexion()) {
+			String sql = "{CALL SP_MostrarPrestamos()}";
+			try (CallableStatement statement = connection.prepareCall(sql)) {
+				try (ResultSet resultSet = statement.executeQuery()) {
+					while (resultSet.next()) {
+						String idPrestamo = resultSet.getString("idPrestamo");
+						String titulo = resultSet.getString("titulo");
+						String alumno = resultSet.getString("alumno");
+						Date fecPrestamo = resultSet.getDate("fecPrestamo");
+						Date fecDevolucion = resultSet.getDate("fecDevolucion");
+						String estado = resultSet.getString("estDevolucion");
+
+						Prestamo prestamo = new Prestamo(idPrestamo, titulo, alumno, fecPrestamo, fecDevolucion, estado);
+						prestamos.add(prestamo);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return prestamos;
+	}
+
+	public static void agregarPrestamo(Prestamo prestamo) throws Exception {
+	    Connection cn = null;
+	    PreparedStatement ps = null;
+	    try {
+	        cn = MySQLConexion.getConexion();
+	        String sql = "{CALL SP_AgregarPrestamo(?, ?, ?, ?, ?, ?)}";
+	        ps = cn.prepareStatement(sql);
+	        ps.setString(1, prestamo.getIdPrestamo());
+	        ps.setDate(2, new java.sql.Date(prestamo.getFecPrestamo().getTime()));
+	        ps.setDate(3, new java.sql.Date(prestamo.getFecDevolucion().getTime()));
+	        ps.setString(4, prestamo.getEstado());
+	        ps.setString(5, prestamo.getIdLibro());
+	        ps.setString(6, prestamo.getIdAlumno());
+	        ps.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (ps != null) {
+	            ps.close();
+	        }
+	        if (cn != null) {
+	            cn.close();
+	        }
+	    }
+	}
+
+	public static Prestamo mostrarPrestamo(String id) {
+	    Prestamo prestamo = null;
+	    try (Connection cn = MySQLConexion.getConexion()) {
+	        String sql = "CALL SP_MostrarPrestamo(?)";
+
+	        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+	            ps.setString(1, id);
+	            try (ResultSet rs = ps.executeQuery()) {
+	                if (rs.next()) {
+	                	String idPrestamo = rs.getString("idPrestamo");
+						String titulo = rs.getString("titulo");
+						String alumno = rs.getString("alumno");
+						Date fecPres = rs.getDate("fecPrestamo");
+						Date fecDev = rs.getDate("fecDevolucion");
+						String estado = rs.getString("estDevolucion");
+
+						prestamo = new Prestamo(idPrestamo, fecPres, fecDev, estado, titulo, alumno, "");
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return prestamo;
+	}
+
+	public static void actualizarPrestamo(Prestamo prestamo) throws Exception {
+	    try (Connection cn = MySQLConexion.getConexion();
+		         PreparedStatement ps = cn.prepareStatement("CALL SP_ActualizarPrestamo(?, ?, ?, ?, ?, ?)")) {
+
+		        ps.setString(1, prestamo.getIdPrestamo());
+		        ps.setDate(2, new java.sql.Date(prestamo.getFecPres().getTime()));
+		        ps.setDate(3, new java.sql.Date(prestamo.getFecDev().getTime()));
+		        ps.setString(4, prestamo.getEstado());
+		        ps.setString(5, prestamo.getIdLibro());
+		        ps.setString(6, prestamo.getIdAlumno());
+		        
+		        ps.executeUpdate();
+		        
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+	}
+
+	public static void eliminarPrestamo(String id) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			connection = MySQLConexion.getConexion();
+			String query = "DELETE FROM Prestamo WHERE idPrestamo IS NULL OR idPrestamo = ?";
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, id);
+
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}

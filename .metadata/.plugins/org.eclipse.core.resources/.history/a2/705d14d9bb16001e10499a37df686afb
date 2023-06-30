@@ -1,0 +1,84 @@
+package servlets;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import models.EditorialModel;
+import entities.Editorial;
+
+import java.io.IOException;
+import java.util.List;
+
+public class EditorialServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if (action == null)
+            action = "listar";
+
+        switch (action) {
+            case "listar":
+                listarEditoriales(request, response);
+                break;
+            case "agregar":
+            case "mostrar":
+            case "actualizar":
+            case "eliminar":
+                procesarEditorial(request, response, action);
+                break;
+            default:
+                listarEditoriales(request, response);
+                break;
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
+
+    private void listarEditoriales(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            List<Editorial> editoriales = EditorialModel.listarEditoriales();
+            request.setAttribute("editoriales", editoriales);
+            request.getRequestDispatcher("listaEditoriales.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void procesarEditorial(HttpServletRequest request, HttpServletResponse response, String action) throws ServletException, IOException {
+        String idEditorial = request.getParameter("id");
+        String nombre = request.getParameter("nombre");
+        String direccion = request.getParameter("direccion");
+        String telefono = request.getParameter("telefono");
+        String email = request.getParameter("email");
+        String ruc = request.getParameter("ruc");
+
+        Editorial editorial = new Editorial(idEditorial, nombre, direccion, telefono, email, ruc);
+
+        try {
+            switch (action) {
+                case "agregar":
+                    EditorialModel.agregarEditorial(editorial);
+                    break;
+                case "mostrar":
+                    Editorial edi = EditorialModel.mostrarEditorial(idEditorial);
+                    request.setAttribute("editorial", edi);
+                    request.getRequestDispatcher("editarEditorial.jsp").forward(request, response);
+                    return; // Se agrega un return para salir del método después de redirigir
+                case "actualizar":
+                    EditorialModel.actualizarEditorial(editorial);
+                    break;
+                case "eliminar":
+                    EditorialModel.eliminarEditorial(idEditorial);
+                    break;
+            }
+            listarEditoriales(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

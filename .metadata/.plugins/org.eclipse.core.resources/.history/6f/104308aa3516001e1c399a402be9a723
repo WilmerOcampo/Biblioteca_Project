@@ -1,0 +1,99 @@
+package servlets;
+
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import util.MySQLConexion;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class LoginServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    String email = request.getParameter("user");
+	    String psw = request.getParameter("pass");
+	    Connection con = null;
+	    HttpSession httpSession = request.getSession();
+	    RequestDispatcher reqDispatcher = null;
+	    try {
+	        con = MySQLConexion.getConexion();
+	        PreparedStatement pst = con.prepareStatement("SELECT * FROM Empleado WHERE dni = ? AND clave = ?");
+	        pst.setString(1, email);
+	        pst.setString(2, psw);
+	        
+	        ResultSet rs = pst.executeQuery();
+	        if(rs.next()) {
+	            httpSession.setAttribute("nombre", rs.getString("nombre"));
+	            reqDispatcher = request.getRequestDispatcher("LibroServlet?listaLibros&action=listar");
+	        } else {
+	            request.setAttribute("estado", "failed");
+	            reqDispatcher = request.getRequestDispatcher("login.jsp");
+	        }
+	        reqDispatcher.forward(request, response);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	
+    /*if (request.getParameter("login") != null) {
+        String user = request.getParameter("user");
+        String password = request.getParameter("pass");
+        HttpSession sessionObj = request.getSession();
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            
+            con = MySQLConexion.getConexion();
+            String query = "SELECT * FROM Empleado WHERE dni = ? AND clave = ?";
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, user);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                sessionObj.setAttribute("logueado", "1");
+                sessionObj.setAttribute("user", rs.getString("dni"));
+                sessionObj.setAttribute("id", rs.getString("idEmpleado"));
+                response.sendRedirect("LibroServlet?listaLibros&action=listar");
+            } else {
+                out.print("<br> <div class=\"alert alert-danger alert-small\" role=\"alert\"> Usuario o Contraseña no válido </div>");
+            }
+        } catch (SQLException e) {
+            out.print(" <div class=\"alert alert-danger\" role=\"alert\"> Error en la conexión con la base de datos </div>");
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }*/
+}

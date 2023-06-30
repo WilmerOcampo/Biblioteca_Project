@@ -1,121 +1,87 @@
 package servlets;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import models.LibroModel;
+import entities.Libro;
 
 import java.io.IOException;
 import java.util.List;
 
-import entities.Libro;
-
-/**
- * Servlet implementation class LibroServlet
- */
 public class LibroServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-  
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String action = request.getParameter("action");
+    private static final long serialVersionUID = 1L;
 
-		if (action == null)
-			action = "listar";
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
 
-		switch (action) {
-		case "listar":
-			listarLibros(request, response);
-			break;
-		case "agregar":
-			try {
-				agregarLibro(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			break;
-		case "mostrar":
-			try {
-				mostrarLibro(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			break;
-		case "actualizar":
-			try {
-				actualizarLibro(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			break;
-		case "eliminar":
-			try {
-				eliminarLibro(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			break;
-		default:
-			listarLibros(request, response);
-			break;
-		}
-	}
+        if (action == null)
+            action = "listar";
+
+        switch (action) {
+            case "listar" -> listarLibros(request, response);
+            case "agregar" -> procesarLibro(request, response, "agregar");
+            case "mostrar" -> procesarLibro(request, response, "mostrar");
+            case "actualizar" -> procesarLibro(request, response, "actualizar");
+            case "eliminar" -> procesarLibro(request, response, "eliminar");
+            default -> listarLibros(request, response);
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 
     private void listarLibros(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		try {
-			List<Libro> libros = LibroModel.listarLibros();
-			request.setAttribute("libros", libros);
-			request.getRequestDispatcher("listaLibros.jsp").forward(request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            List<Libro> libros = LibroModel.listarLibros();
+            request.setAttribute("libros", libros);
+            request.getRequestDispatcher("listaLibros.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void agregarLibro(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	String idLibro = request.getParameter("id");
-        String titulo = request.getParameter("titulo");
-        String autor = request.getParameter("autor");
-        String idEditorial = request.getParameter("idEditorial");
-        int stock = Integer.parseInt(request.getParameter("stock"));
-        String estado = request.getParameter("estado");
-        System.out.println("LLEGUE AQUIIIIIIII");
-
-        Libro libro = new Libro(idLibro, titulo, autor, idEditorial, stock, estado, "");
-        LibroModel.agregarLibro(libro);
-        
-        listarLibros(request, response);
-    }
-
-    private void mostrarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String idLibro = request.getParameter("id");
-        Libro libro = LibroModel.mostrarLibro(idLibro);
-
-        request.setAttribute("libro", libro);
-        request.getRequestDispatcher("editarLibro.jsp").forward(request, response);
-    }
-
-    private void actualizarLibro(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void procesarLibro(HttpServletRequest request, HttpServletResponse response, String action) throws ServletException, IOException {
         String idLibro = request.getParameter("id");
         String titulo = request.getParameter("titulo");
         String autor = request.getParameter("autor");
         String idEditorial = request.getParameter("idEditorial");
-        int stock = Integer.parseInt(request.getParameter("stock"));
+        //int stock = Integer.parseInt(request.getParameter("stock"));
+        String stk = request.getParameter("stock");
+        int stock = 0; // Valor predeterminado en caso de que el parámetro sea nulo
+
+        if (stk != null && !stk.isEmpty()) {
+            try {
+                stock = Integer.parseInt(stk);
+            } catch (NumberFormatException e) {
+                // Manejar el caso en el que la cadena no sea un número válido
+                e.printStackTrace();
+            }
+        }
         String estado = request.getParameter("estado");
 
         Libro libro = new Libro(idLibro, titulo, autor, idEditorial, stock, estado);
-        LibroModel.actualizarLibro(libro);
-        listarLibros(request, response);
-    }
 
-    private void eliminarLibro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String idLibro = request.getParameter("id");
-
-        LibroModel.eliminarLibro(idLibro);
-        listarLibros(request, response);
+        try {
+            switch (action) {
+                case "agregar":
+                    LibroModel.agregarLibro(libro);
+                    break;
+                case "mostrar":
+                    Libro lib = LibroModel.mostrarLibro(idLibro);
+                    request.setAttribute("libro", lib);
+                    request.getRequestDispatcher("editarLibro.jsp").forward(request, response);
+                    return; // Se agrega un return para salir del método después de redirigir
+                case "actualizar":
+                    LibroModel.actualizarLibro(libro);
+                    break;
+                case "eliminar":
+                    LibroModel.eliminarLibro(idLibro);
+                    break;
+            }
+            listarLibros(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
 }

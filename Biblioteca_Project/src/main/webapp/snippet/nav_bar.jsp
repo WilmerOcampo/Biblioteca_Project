@@ -34,22 +34,21 @@
 			<div class="collapse navbar-collapse" id="menu">
 				<ul class="navbar-nav me-auto" style="font-size: 20px">
 					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="LibroServlet?listaLibros&action=listar">Libros</a></li>
-					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="listaEmpleados.jsp">Empleados</a></li>
-					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="listaPrestamos.jsp">Préstamos</a></li>
+					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="EmpleadoServlet?listaEmpleados&action=listar">Empleados</a></li>
+					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="PrestamoServlet?listaPrestamos&action=listar">Préstamos</a></li>
 					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="AlumnoServlet?listaAlumnos&action=listar">Alumnos</a></li>
-					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="listaEditorial.jsp">Editorial</a></li>
-					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="listaCompras.jsp">Compras</a></li>
+					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="EditorialServlet?listaEditoriales&action=listar">Editorial</a></li>
+					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href="CompraLibroServlet?listaCompras&action=listar">Compras</a></li>
+					<li class="nav-item" style="margin: 0 0.5rem"><a class="nav-link" href=""><%--=session.getAttribute("nombre") --%></a></li>
+				<form class="d-flex"  action="LogoutServlet">
+					<button class="btn btn-danger d-none d-md-inline-block" type="submit" style="font-size: 20px; font-weight: 600">Cerrar sesión</button>
+				</form>
 				</ul>
 
 				<hr class="d-md-none text-white-50">
 
 				<!--boton Informacion -->
-				<form class="d-flex">
-					<button class="btn btn-danger d-none d-md-inline-block "
-						type="submit" style="font-size: 20px; font-weight: 600">
-						<a href="login.jsp" style="text-decoration: none; color: #fff">Cerrar Sesion</a>
-					</button>
-				</form>
+
 			</div>
 		</div>
 	</nav>

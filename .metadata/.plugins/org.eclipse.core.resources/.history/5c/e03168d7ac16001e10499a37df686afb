@@ -1,0 +1,187 @@
+package entities;
+
+import java.time.LocalDate;
+import java.util.Date;
+
+public class Prestamo {
+	private String idPrestamo;
+	private LocalDate fecPrestamo;
+	private LocalDate fecDevolucion;
+	private String estado;
+	private String idLibro;
+	private String idAlumno;
+	private String titulo;
+	private String alumno;
+	/*public Prestamo() {
+
+	}
+	public Prestamo(String idPrestamo, Date fecPres, Date fecDev, String estado, String idLibro, String idAlumno) {
+		//super();
+		this.idPrestamo = idPrestamo;
+		this.fecPres = fecPres;
+		this.fecDev = fecDev;
+		this.estado = estado;
+		this.idLibro = idLibro;
+		this.idAlumno = idAlumno;
+	}
+	public Prestamo(String idPrestamo, Date fecPres, Date fecDev, String estado, String titulo, String alumno, String sw) {
+		//super();
+		this.idPrestamo = idPrestamo;
+		this.fecPres = fecPres;
+		this.fecDev = fecDev;
+		this.estado = estado;
+		this.titulo = titulo;
+		this.alumno = alumno;
+	}
+	public String getIdPrestamo() {
+		return idPrestamo;
+	}
+	public void setIdPrestamo(String idPrestamo) {
+		this.idPrestamo = idPrestamo;
+	}
+	public Date getFecPres() {
+		return fecPres;
+	}
+	public void setFecPres(Date fecPres) {
+		this.fecPres = fecPres;
+	}
+	public Date getFecDev() {
+		return fecDev;
+	}
+	public void setFecDev(Date fecDev) {
+		this.fecDev = fecDev;
+	}
+	public String getEstado() {
+		return estado;
+	}
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+	public String getIdLibro() {
+		return idLibro;
+	}
+	public void setIdLibro(String idLibro) {
+		this.idLibro = idLibro;
+	}
+	public String getIdAlumno() {
+		return idAlumno;
+	}
+	public void setIdAlumno(String idAlumno) {
+		this.idAlumno = idAlumno;
+	}
+	public String getTitulo() {
+		return titulo;
+	}
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+	public String getAlumno() {
+		return alumno;
+	}
+	public void setAlumno(String alumno) {
+		this.alumno = alumno;
+	}*/
+	
+	
+	
+	public Prestamo() {
+	}
+	
+	/*public Prestamo(String idPrestamo, String titulo, Date fecPrestamo, Date fecDevolucion, String idAlumno,
+			String estado, String alumno) {
+		//super();
+		this.idPrestamo = idPrestamo;
+		this.titulo = titulo;
+		this.fecPrestamo = fecPrestamo;
+		this.fecDevolucion = fecDevolucion;
+		this.idAlumno = idAlumno;
+		this.estado = estado;
+		this.alumno = alumno;
+	}*/
+	
+	public Prestamo(String idPrestamo, String titulo, String alumno, LocalDate fecPrestamo, LocalDate fecDevolucion, String estado) {
+		this.idPrestamo = idPrestamo;
+		this.titulo = titulo;
+		this.alumno = alumno;
+		this.fecPrestamo = fecPrestamo;
+		this.fecDevolucion = fecPrestamo;
+		this.estado = estado;
+	}
+	
+	public Prestamo(String idPrestamo, LocalDate fecPrestamo, LocalDate fecDevolucion, String estado, String idLibro, String idAlumno, String ac1) {
+		//super();
+		this.idPrestamo = idPrestamo;
+		
+		this.fecPrestamo = fecPrestamo;
+		this.fecDevolucion = fecDevolucion;
+		this.estado = estado;
+		this.idLibro = idLibro;
+		this.idAlumno = idAlumno;
+		
+	}
+
+	public String getIdPrestamo() {
+		return idPrestamo;
+	}
+
+	public void setIdPrestamo(String idPrestamo) {
+		this.idPrestamo = idPrestamo;
+	}
+
+	public LocalDate getFecPrestamo() {
+		return fecPrestamo;
+	}
+
+	public void setFecPrestamo(LocalDate fecPrestamo) {
+		this.fecPrestamo = fecPrestamo;
+	}
+
+	public LocalDate getFecDevolucion() {
+		return fecDevolucion;
+	}
+
+	public void setFecDevolucion(LocalDate fecDevolucion) {
+		this.fecDevolucion = fecDevolucion;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public String getIdLibro() {
+		return idLibro;
+	}
+
+	public void setIdLibro(String idLibro) {
+		this.idLibro = idLibro;
+	}
+
+	public String getIdAlumno() {
+		return idAlumno;
+	}
+
+	public void setIdAlumno(String idAlumno) {
+		this.idAlumno = idAlumno;
+	}
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+	public String getAlumno() {
+		return alumno;
+	}
+
+	public void setAlumno(String alumno) {
+		this.alumno = alumno;
+	}
+	
+}
